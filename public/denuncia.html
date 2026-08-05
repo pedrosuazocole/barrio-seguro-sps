@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hacer Denuncia - Barrio Seguro SPS</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#1a237e">
+</head>
+<body>
+  <header class="app-header">
+    <div class="titulo">
+      🚨 Hacer Denuncia
+      <small id="bienvenida">Hola</small>
+    </div>
+    <button class="btn-logout" id="btn-logout">Cerrar sesión</button>
+  </header>
+
+  <main>
+    <div class="seccion">
+      <h2>Reportar un incidente</h2>
+      <p style="font-size:0.85rem;color:#666;margin-bottom:10px;">
+        Toca el mapa para marcar el lugar exacto, o usa tu ubicación actual.
+      </p>
+      <button id="btn-mi-ubicacion" class="btn-grande" style="background:#3949ab;">📍 Usar mi ubicación actual</button>
+      <div id="map" style="height:35vh;border-radius:10px;border:2px solid #ccc;margin:10px 0;"></div>
+
+      <form id="form-denuncia" class="form" style="box-shadow:none;padding:0;margin:0;">
+        <select id="categoria" required>
+          <option value="">Selecciona una categoría</option>
+          <option value="Robo/Asalto">🚨 Robo/Asalto</option>
+          <option value="Vehículo Sospechoso">🚗 Vehículo Sospechoso</option>
+          <option value="Violencia Doméstica">🆘 Violencia Doméstica (confidencial)</option>
+        </select>
+        <textarea id="descripcion" placeholder="Descripción breve (opcional)" rows="3" style="width:100%;padding:10px;border:1px solid #ccc;border-radius:5px;margin:8px 0;font-family:inherit;"></textarea>
+        <input type="text" id="ubicacion-texto" placeholder="Ubicación seleccionada" readonly>
+        <button type="submit" class="btn-grande btn-denunciar">Enviar Denuncia</button>
+      </form>
+    </div>
+
+    <div class="seccion">
+      <h2>Alerta silenciosa</h2>
+      <p style="font-size:0.85rem;color:#666;margin-bottom:10px;">
+        Envía tu ubicación de inmediato al panel de monitoreo, sin necesidad de llenar un formulario.
+      </p>
+      <button id="btn-panico" class="btn-grande btn-panico">🆘 Enviar Alerta Silenciosa</button>
+    </div>
+
+    <div class="seccion">
+      <h2>Mi Círculo de Confianza</h2>
+      <div id="lista-contactos"></div>
+      <form id="form-contacto" class="form" style="box-shadow:none;padding:0;margin-top:10px;">
+        <input type="text" id="contacto-nombre" placeholder="Nombre" required>
+        <input type="tel" id="contacto-telefono" placeholder="Teléfono" required>
+        <input type="text" id="contacto-relacion" placeholder="Relación (vecino, familiar)" required>
+        <button type="submit">Agregar Contacto</button>
+      </form>
+    </div>
+
+    <div id="toast-container" class="toast-container"></div>
+  </main>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="js/denuncia.js"></script>
+</body>
+</html>

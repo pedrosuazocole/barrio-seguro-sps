@@ -172,3 +172,253 @@ h1 {
 .hidden {
   display: none;
 }
+
+/* ==================== LANDING (index.html) ==================== */
+.landing {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  text-align: center;
+}
+
+.landing-logo {
+  font-size: 3rem;
+  margin-bottom: 5px;
+}
+
+.landing h1 {
+  color: #1a237e;
+  font-size: 1.8rem;
+  margin-bottom: 5px;
+}
+
+.landing p.subtitle {
+  color: #555;
+  margin-bottom: 30px;
+}
+
+.landing-cards {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 700px;
+}
+
+.landing-card {
+  background: white;
+  border-radius: 16px;
+  padding: 30px 25px;
+  width: 260px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  text-decoration: none;
+  color: #333;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.landing-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.landing-card .icono {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+  display: block;
+}
+
+.landing-card h2 {
+  color: #1a237e;
+  font-size: 1.2rem;
+  margin-bottom: 8px;
+}
+
+.landing-card p {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.landing-card.denuncia { border-top: 5px solid #d32f2f; }
+.landing-card.monitor { border-top: 5px solid #283593; }
+
+/* ==================== LOGIN / REGISTRO ==================== */
+.auth-wrap {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.auth-card {
+  background: white;
+  border-radius: 16px;
+  padding: 30px;
+  width: 100%;
+  max-width: 380px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+}
+
+.auth-card h1 {
+  color: #1a237e;
+  font-size: 1.4rem;
+  text-align: center;
+  margin-bottom: 5px;
+}
+
+.auth-card .auth-subtitle {
+  text-align: center;
+  color: #777;
+  font-size: 0.85rem;
+  margin-bottom: 20px;
+}
+
+.auth-card input {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  margin: 8px 0;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+.auth-card button[type="submit"] {
+  width: 100%;
+  padding: 12px;
+  margin-top: 12px;
+  background: #1a237e;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.auth-card button[type="submit"]:hover { background: #283593; }
+
+.auth-links {
+  text-align: center;
+  margin-top: 16px;
+  font-size: 0.9rem;
+}
+
+.auth-links a { color: #3949ab; text-decoration: none; }
+.auth-links a:hover { text-decoration: underline; }
+
+.auth-error {
+  background: #ffebee;
+  color: #c62828;
+  padding: 10px;
+  border-radius: 8px;
+  margin-top: 10px;
+  font-size: 0.9rem;
+  display: none;
+}
+
+.auth-error.visible { display: block; }
+
+.demo-hint {
+  background: #fff8e1;
+  border: 1px dashed #ffca28;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 0.8rem;
+  color: #7a5c00;
+  margin-top: 14px;
+  text-align: center;
+}
+
+/* ==================== MÓDULO DENUNCIA ==================== */
+.app-header {
+  background: #1a237e;
+  color: white;
+  padding: 12px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.app-header .titulo { font-size: 1.15rem; font-weight: bold; }
+.app-header .titulo small { display: block; font-weight: normal; font-size: 0.75rem; opacity: 0.85; }
+
+.btn-logout {
+  background: rgba(255,255,255,0.15);
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+.btn-logout:hover { background: rgba(255,255,255,0.3); }
+
+.btn-grande {
+  display: block;
+  width: 100%;
+  padding: 18px;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.05rem;
+  font-weight: bold;
+  color: white;
+  cursor: pointer;
+  margin: 10px 0;
+}
+
+.btn-denunciar { background: #d32f2f; }
+.btn-denunciar:hover { background: #b71c1c; }
+
+.btn-panico { background: #6a1b9a; }
+.btn-panico:hover { background: #4a148c; }
+
+.seccion {
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  margin: 14px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+
+.seccion h2 { color: #1a237e; font-size: 1.1rem; margin-bottom: 10px; }
+
+/* ==================== MÓDULO MONITOR / MAPA ==================== */
+.emoji-marker {
+  font-size: 26px;
+  line-height: 1;
+  text-align: center;
+  filter: drop-shadow(0 2px 3px rgba(0,0,0,0.45));
+  animation: blink-pulse 1.1s ease-in-out infinite;
+}
+
+@keyframes blink-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.35; transform: scale(1.2); }
+}
+
+.badge-count {
+  background: #d32f2f;
+  color: white;
+  border-radius: 999px;
+  padding: 1px 8px;
+  font-size: 0.75rem;
+  margin-left: 6px;
+}
+
+.alerta-item {
+  background: #fff3e0;
+  border-left: 4px solid #d32f2f;
+  padding: 10px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+}
+
+.alerta-item.confidencial {
+  background: #f3e5f5;
+  border-left-color: #6a1b9a;
+}

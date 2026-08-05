@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Iniciar Sesión - Barrio Seguro SPS</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#1a237e">
+</head>
+<body>
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <h1>🚨 Acceso Denunciante</h1>
+      <p class="auth-subtitle">Inicia sesión para reportar incidentes en tu barrio</p>
+
+      <form id="form-login">
+        <input type="text" id="username" placeholder="Usuario" autocomplete="username" required>
+        <input type="password" id="password" placeholder="Contraseña" autocomplete="current-password" required>
+        <button type="submit">Ingresar</button>
+      </form>
+
+      <div id="auth-error" class="auth-error"></div>
+
+      <div class="auth-links">
+        ¿No tienes cuenta? <a href="/registro.html">Crear cuenta</a><br>
+        <a href="/index.html">← Volver al inicio</a>
+      </div>
+
+      <div class="demo-hint">
+        Cuenta de prueba: <strong>vecino_demo</strong> / <strong>Demo1234</strong>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/login.js"></script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crear Cuenta - Barrio Seguro SPS</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#1a237e">
+</head>
+<body>
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <h1>Crear Cuenta</h1>
+      <p class="auth-subtitle">Regístrate para poder hacer denuncias</p>
+
+      <form id="form-registro">
+        <input type="text" id="nombre" placeholder="Nombre completo" required>
+        <input type="tel" id="telefono" placeholder="Teléfono (opcional)">
+        <input type="text" id="username" placeholder="Usuario" autocomplete="username" required>
+        <input type="password" id="password" placeholder="Contraseña (mín. 6 caracteres)" autocomplete="new-password" required minlength="6">
+        <input type="password" id="password2" placeholder="Confirmar contraseña" autocomplete="new-password" required minlength="6">
+        <button type="submit">Crear cuenta</button>
+      </form>
+
+      <div id="auth-error" class="auth-error"></div>
+
+      <div class="auth-links">
+        ¿Ya tienes cuenta? <a href="/login.html">Iniciar sesión</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/registro.js"></script>
+</body>
+</html>

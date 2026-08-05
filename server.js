@@ -1,18 +1,24 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
 const path = require('path');
 const { initDB, getDB } = require('./database');
+const auth = require('./auth');
+const { direccionInversa } = require('./geocoding');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+app.set('trust proxy', 1); // Railway/proxy reverso: necesario para cookies "secure"
+
 app.use(cors());
 app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(cookieParser());
 
 // Inicializar base de datos
 initDB();
+setInterval(() => auth.limpiarSesionesVencidas(), 1000 * 60 * 60);
 
 // Almacenar conexiones SSE
 let clients = [];
@@ -39,39 +45,124 @@ app.get('/api/stream', (req, res) => {
   });
 });
 
+// ==================== PÁGINAS PROTEGIDAS ====================
+// Deben ir ANTES de express.static para poder interceptar la petición.
+
+app.get(['/denuncia', '/denuncia.html'], auth.requireAuth, (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'denuncia.html'));
+});
+
+app.get(['/monitor', '/monitor.html'], (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'monitor.html'));
+});
+
+app.use(express.static(path.join(__dirname, 'public')));
+
+// ==================== AUTENTICACIÓN ====================
+
+app.post('/api/auth/registro', (req, res) => {
+  const { nombre, telefono, username, password } = req.body;
+  if (!nombre || !username || !password) {
+    return res.status(400).json({ error: 'Nombre, usuario y contraseña son obligatorios' });
+  }
+  if (password.length < 6) {
+    return res.status(400).json({ error: 'La contraseña debe tener al menos 6 caracteres' });
+  }
+  const db = getDB();
+  const existe = db.prepare('SELECT id FROM usuarios WHERE username = ?').get(username);
+  if (existe) {
+    return res.status(409).json({ error: 'Ese nombre de usuario ya existe' });
+  }
+  const hash = auth.hashPassword(password);
+  const info = db.prepare('INSERT INTO usuarios (username, password_hash, nombre, telefono) VALUES (?, ?, ?, ?)')
+    .run(username, hash, nombre, telefono || null);
+  const token = auth.crearSesion(info.lastInsertRowid);
+  res.cookie(auth.COOKIE_NAME, token, auth.cookieOptions());
+  res.json({ ok: true, nombre, username });
+});
+
+app.post('/api/auth/login', (req, res) => {
+  const { username, password } = req.body;
+  if (!username || !password) {
+    return res.status(400).json({ error: 'Usuario y contraseña son obligatorios' });
+  }
+  const db = getDB();
+  const usuario = db.prepare('SELECT * FROM usuarios WHERE username = ?').get(username);
+  if (!usuario || !auth.verificarPassword(password, usuario.password_hash)) {
+    return res.status(401).json({ error: 'Usuario o contraseña incorrectos' });
+  }
+  const token = auth.crearSesion(usuario.id);
+  res.cookie(auth.COOKIE_NAME, token, auth.cookieOptions());
+  res.json({ ok: true, nombre: usuario.nombre, username: usuario.username });
+});
+
+app.post('/api/auth/logout', (req, res) => {
+  auth.eliminarSesion(req.cookies[auth.COOKIE_NAME]);
+  res.clearCookie(auth.COOKIE_NAME, { path: '/' });
+  res.json({ ok: true });
+});
+
+app.get('/api/auth/me', auth.attachUserIfPresent, (req, res) => {
+  if (!req.usuario) return res.status(401).json({ error: 'No autenticado' });
+  res.json({ nombre: req.usuario.nombre, username: req.usuario.username, telefono: req.usuario.telefono });
+});
+
+// ==================== GEOCODIFICACIÓN ====================
+// Usado por el módulo de denuncia para mostrarle al vecino la dirección o
+// nombre del lugar mientras selecciona la ubicación, antes de enviar el reporte.
+app.get('/api/geocoding/reverse', async (req, res) => {
+  const lat = parseFloat(req.query.lat);
+  const lng = parseFloat(req.query.lng);
+  if (Number.isNaN(lat) || Number.isNaN(lng)) {
+    return res.status(400).json({ error: 'Coordenadas inválidas' });
+  }
+  const resultado = await direccionInversa(lat, lng);
+  if (!resultado) {
+    return res.status(502).json({ error: 'No se pudo obtener la dirección en este momento' });
+  }
+  res.json(resultado);
+});
+
 // ==================== API REST ====================
 
-// Contactos
-app.get('/api/contactos', (req, res) => {
+// Contactos (Círculo de Confianza) — propios del vecino autenticado
+app.get('/api/contactos', auth.requireAuth, (req, res) => {
   const db = getDB();
-  const contacts = db.prepare('SELECT * FROM contactos WHERE usuario_id = 1').all();
+  const contacts = db.prepare('SELECT * FROM contactos WHERE usuario_id = ?').all(req.usuario.id);
   res.json(contacts);
 });
 
-app.post('/api/contactos', (req, res) => {
+app.post('/api/contactos', auth.requireAuth, (req, res) => {
   const { nombre, telefono, relacion } = req.body;
   if (!nombre || !telefono || !relacion) {
     return res.status(400).json({ error: 'Faltan campos' });
   }
   const db = getDB();
-  const stmt = db.prepare('INSERT INTO contactos (usuario_id, nombre, telefono, relacion) VALUES (1, ?, ?, ?)');
-  const info = stmt.run(nombre, telefono, relacion);
-  res.json({ id: info.lastInsertRowid, usuario_id: 1, nombre, telefono, relacion });
+  const stmt = db.prepare('INSERT INTO contactos (usuario_id, nombre, telefono, relacion) VALUES (?, ?, ?, ?)');
+  const info = stmt.run(req.usuario.id, nombre, telefono, relacion);
+  res.json({ id: info.lastInsertRowid, usuario_id: req.usuario.id, nombre, telefono, relacion });
 });
 
-// Alertas silenciosas
-app.post('/api/alertas/silenciosa', (req, res) => {
+// Alertas silenciosas — requiere sesión (se envían desde el módulo de denuncia)
+app.post('/api/alertas/silenciosa', auth.requireAuth, async (req, res) => {
   const { lat, lng } = req.body;
+  if (typeof lat !== 'number' || typeof lng !== 'number') {
+    return res.status(400).json({ error: 'Ubicación inválida' });
+  }
+  const geo = await direccionInversa(lat, lng);
+  const direccion = geo ? (geo.nombre || geo.direccion) : null;
+
   const db = getDB();
-  const mensaje = 'Alerta silenciosa activada desde ubicación';
-  const stmt = db.prepare('INSERT INTO alertas_silenciosas (usuario_id, lat, lng, mensaje) VALUES (1, ?, ?, ?)');
-  const info = stmt.run(lat, lng, mensaje);
+  const mensaje = `Alerta silenciosa de ${req.usuario.nombre}`;
+  const stmt = db.prepare('INSERT INTO alertas_silenciosas (usuario_id, lat, lng, mensaje, direccion) VALUES (?, ?, ?, ?, ?)');
+  const info = stmt.run(req.usuario.id, lat, lng, mensaje, direccion);
   const alerta = {
     id: info.lastInsertRowid,
-    usuario_id: 1,
+    usuario_id: req.usuario.id,
     lat,
     lng,
     mensaje,
+    direccion,
     timestamp: new Date().toISOString(),
     activa: 1
   };
@@ -85,21 +176,32 @@ app.get('/api/alertas/activas', (req, res) => {
   res.json(alertas);
 });
 
-// Incidentes
-app.post('/api/incidentes', (req, res) => {
+// Incidentes (Denuncias) — crear requiere sesión; leer es público (para el monitor)
+app.post('/api/incidentes', auth.requireAuth, async (req, res) => {
   const { categoria, lat, lng, descripcion } = req.body;
-  if (!categoria || !lat || !lng) {
-    return res.status(400).json({ error: 'Categoría y ubicación requeridos' });
+  if (!categoria || typeof lat !== 'number' || typeof lng !== 'number') {
+    return res.status(400).json({ error: 'Categoría y ubicación son obligatorias' });
   }
+  const CATEGORIAS_VALIDAS = ['Robo/Asalto', 'Vehículo Sospechoso', 'Violencia Doméstica'];
+  if (!CATEGORIAS_VALIDAS.includes(categoria)) {
+    return res.status(400).json({ error: 'Categoría no válida' });
+  }
+
+  // Se resuelve la dirección aquí (servidor), no se confía en texto enviado por el
+  // cliente, para que quede consistente sin importar si el navegador pudo geocodificar.
+  const geo = await direccionInversa(lat, lng);
+  const direccion = geo ? (geo.nombre || geo.direccion) : null;
+
   const db = getDB();
-  const stmt = db.prepare('INSERT INTO incidentes (categoria, lat, lng, descripcion) VALUES (?, ?, ?, ?)');
-  const info = stmt.run(categoria, lat, lng, descripcion);
+  const stmt = db.prepare('INSERT INTO incidentes (categoria, lat, lng, descripcion, usuario_id, direccion) VALUES (?, ?, ?, ?, ?, ?)');
+  const info = stmt.run(categoria, lat, lng, descripcion || '', req.usuario.id, direccion);
   const incidente = {
     id: info.lastInsertRowid,
     categoria,
     lat,
     lng,
-    descripcion,
+    descripcion: descripcion || '',
+    direccion,
     timestamp: new Date().toISOString()
   };
   sendEventToAll('nuevo_incidente', incidente);
@@ -118,7 +220,7 @@ app.get('/api/incidentes', (req, res) => {
   res.json(incidentes);
 });
 
-// Recursos
+// Recursos (directorio de policía, hospitales, refugios)
 app.post('/api/recursos', (req, res) => {
   const { nombre, tipo, lat, lng, direccion, telefono, horario } = req.body;
   if (!nombre || !tipo || !lat || !lng) {
