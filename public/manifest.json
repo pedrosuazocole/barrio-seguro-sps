@@ -1,0 +1,16 @@
+{
+  "name": "Barrio Seguro SPS",
+  "short_name": "Barrio Seguro",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#1a237e",
+  "theme_color": "#1a237e",
+  "description": "Aplicación de seguridad comunitaria para San Pedro Sula",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}

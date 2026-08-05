@@ -1,0 +1,174 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #f4f4f9;
+  color: #333;
+}
+
+header {
+  background: #1a237e;
+  color: white;
+  padding: 10px;
+}
+
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+h1 {
+  font-size: 1.5rem;
+}
+
+.role-selector button {
+  background: #3949ab;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  margin-left: 5px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.role-selector button.active {
+  background: #ffca28;
+  color: #1a237e;
+}
+
+.weather-widget {
+  background: rgba(255,255,255,0.15);
+  padding: 5px 10px;
+  margin-top: 5px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: inline-block;
+}
+
+.weather-widget:hover {
+  background: rgba(255,255,255,0.3);
+}
+
+#main-nav {
+  display: flex;
+  background: #283593;
+  margin-top: 5px;
+}
+
+.tab {
+  flex: 1;
+  padding: 10px;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.tab.active {
+  background: #ffca28;
+  color: #1a237e;
+  font-weight: bold;
+}
+
+.tab-content {
+  display: none;
+  padding: 10px;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+#map {
+  height: 50vh;
+  width: 100%;
+  margin: 10px 0;
+  border-radius: 10px;
+  border: 2px solid #ccc;
+}
+
+.map-filters {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.btn-report, .btn-alert-sim {
+  background: #1a237e;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  margin-top: 10px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.form {
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  margin: 15px 0;
+}
+
+.form input, .form select, .form button {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.form button {
+  background: #1a237e;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+#lista-contactos, #lista-recursos {
+  display: grid;
+  gap: 10px;
+}
+
+.contacto-card, .recurso-card {
+  background: white;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.toast-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 9999;
+}
+
+.toast {
+  background: #ff4444;
+  color: white;
+  padding: 15px 20px;
+  border-radius: 10px;
+  margin-top: 10px;
+  animation: slideIn 0.3s ease;
+  cursor: pointer;
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.hidden {
+  display: none;
+}
