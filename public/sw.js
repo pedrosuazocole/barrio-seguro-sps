@@ -1,11 +1,14 @@
-const CACHE_NAME = 'barrio-seguro-v2';
+const CACHE_NAME = 'barrio-seguro-v3';
 const ASSETS_TO_CACHE = [
   'css/style.css',
   'js/login.js',
   'js/registro.js',
   'js/denuncia.js',
   'js/monitor.js',
-  'manifest.json'
+  'manifest.json',
+  'icons/icon.svg',
+  'icons/icon-192.png',
+  'icons/icon-512.png'
 ];
 
 self.addEventListener('install', event => {

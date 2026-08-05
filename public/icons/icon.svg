@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
+  <defs>
+    <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#283593"/>
+      <stop offset="100%" stop-color="#151a4d"/>
+    </linearGradient>
+    <linearGradient id="pinGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#e8eaf6"/>
+    </linearGradient>
+    <filter id="softShadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#0d1140" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+
+  <!-- Escudo -->
+  <path filter="url(#softShadow)" fill="url(#shieldGrad)"
+        d="M120 16
+           L172 32
+           C190 38 202 55 202 74
+           C202 146 168 198 120 226
+           C72 198 38 146 38 74
+           C38 55 50 38 68 32
+           Z"/>
+
+  <!-- Borde interior sutil para dar profundidad -->
+  <path fill="none" stroke="#4a5bc4" stroke-width="2" opacity="0.5"
+        d="M120 28
+           L164 42
+           C178 47 189 61 189 76
+           C189 140 160 185 120 210
+           C80 185 51 140 51 76
+           C51 61 62 47 76 42
+           Z"/>
+
+  <!-- Pulso / alerta en tiempo real -->
+  <circle cx="168" cy="60" r="16" fill="none" stroke="#ffca28" stroke-width="2.5" opacity="0.9"/>
+  <circle cx="168" cy="60" r="9" fill="none" stroke="#ffca28" stroke-width="2.5"/>
+  <circle cx="168" cy="60" r="4" fill="#ffca28"/>
+
+  <!-- Casa + pin de ubicación combinados: "el barrio, ubicado y protegido" -->
+  <!-- Techo -->
+  <path fill="#ffca28" d="M89 104 L120 76 L151 104 L145 104 L120 82 L95 104 Z"/>
+
+  <!-- Cuerpo tipo pin (casa que termina en punta de ubicación) -->
+  <path fill="url(#pinGrad)"
+        d="M91 104
+           L149 104
+           L149 138
+           C149 162 132 182 120 194
+           C108 182 91 162 91 138
+           Z"/>
+
+  <!-- Ventana / puerta -->
+  <circle cx="120" cy="132" r="10" fill="#283593"/>
+</svg>

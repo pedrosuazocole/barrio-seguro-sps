@@ -151,7 +151,12 @@ h1 {
   position: fixed;
   bottom: 20px;
   right: 20px;
+  left: 20px;
   z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  pointer-events: none;
 }
 
 .toast {
@@ -162,6 +167,9 @@ h1 {
   margin-top: 10px;
   animation: slideIn 0.3s ease;
   cursor: pointer;
+  max-width: min(360px, 100%);
+  word-wrap: break-word;
+  pointer-events: auto;
 }
 
 @keyframes slideIn {
@@ -184,9 +192,10 @@ h1 {
   text-align: center;
 }
 
-.landing-logo {
-  font-size: 3rem;
-  margin-bottom: 5px;
+.landing-logo-img {
+  width: 96px;
+  height: 96px;
+  margin-bottom: 10px;
 }
 
 .landing h1 {
@@ -260,6 +269,13 @@ h1 {
   width: 100%;
   max-width: 380px;
   box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+}
+
+.auth-logo-img {
+  display: block;
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 12px;
 }
 
 .auth-card h1 {
@@ -339,11 +355,31 @@ h1 {
   color: white;
   padding: 12px 16px;
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
+  gap: 6px 14px;
 }
 
-.app-header .titulo { font-size: 1.15rem; font-weight: bold; }
+.app-header > a,
+.app-header .btn-logout {
+  flex-shrink: 0;
+}
+
+.titulo-con-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.header-logo-img {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+}
+
+.app-header .titulo { font-size: 1.15rem; font-weight: bold; min-width: 0; }
 .app-header .titulo small { display: block; font-weight: normal; font-size: 0.75rem; opacity: 0.85; }
 
 .btn-logout {
@@ -421,4 +457,23 @@ h1 {
 .alerta-item.confidencial {
   background: #f3e5f5;
   border-left-color: #6a1b9a;
+}
+
+/* ==================== AJUSTES PARA PANTALLAS MUY ANGOSTAS ==================== */
+/* Teléfonos de gama baja / pantallas ~320-380px de ancho */
+@media (max-width: 380px) {
+  .app-header .titulo { font-size: 1rem; }
+  .header-logo-img { width: 28px; height: 28px; }
+  .btn-logout { padding: 7px 12px; font-size: 0.8rem; }
+  .btn-grande { padding: 15px; font-size: 0.95rem; }
+  .seccion { margin: 10px; padding: 14px; }
+  .landing-card { width: 100%; max-width: 280px; }
+  .tab { font-size: 0.8rem; padding: 10px 6px; }
+  .auth-card { padding: 22px; }
+}
+
+/* Pantallas grandes: evita que formularios/mapas se estiren demasiado */
+@media (min-width: 900px) {
+  .seccion { max-width: 700px; margin-left: auto; margin-right: auto; }
+  #tab-mapa #map { max-width: 1100px; margin-left: auto; margin-right: auto; }
 }
