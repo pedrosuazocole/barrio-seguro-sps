@@ -14,6 +14,14 @@ const EMOJI_POR_CATEGORIA = {
   'Violencia Doméstica': '🆘'
 };
 
+const CLASE_POR_CATEGORIA = {
+  'Robo/Asalto': 'cat-robo',
+  'Vehículo Sospechoso': 'cat-vehiculo',
+  'Violencia Doméstica': 'cat-violencia'
+};
+
+let filtroReporteActual = 'todas';
+
 function playAlarm() {
   try {
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -47,6 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
   cargarAlertasActivas();
   cargarIncidentesViolencia();
   setupTabs();
+  setupFiltrosReportes();
   initSSE();
 });
 
@@ -104,7 +113,82 @@ function cargarIncidentes() {
     .then(data => {
       allIncidentes = data;
       actualizarMarcadores();
+      renderizarReportes();
     });
+}
+
+// "Hace X min/h/d" — asume que quien mira la pantalla está en Honduras (igual que
+// el resto del panel), ver la nota de zona horaria en server.js/database.js.
+function tiempoRelativo(timestampStr) {
+  const entonces = new Date(timestampStr).getTime();
+  const diffSeg = Math.max(0, Math.floor((Date.now() - entonces) / 1000));
+  if (diffSeg < 60) return 'Justo ahora';
+  const diffMin = Math.floor(diffSeg / 60);
+  if (diffMin < 60) return `Hace ${diffMin} min`;
+  const diffHoras = Math.floor(diffMin / 60);
+  if (diffHoras < 24) return `Hace ${diffHoras} h`;
+  const diffDias = Math.floor(diffHoras / 24);
+  return `Hace ${diffDias} d`;
+}
+
+function renderizarReportes() {
+  const contenedor = document.getElementById('lista-reportes');
+  const conteo = document.getElementById('conteo-reportes');
+  if (!contenedor) return;
+
+  const items = allIncidentes.filter(inc => filtroReporteActual === 'todas' || inc.categoria === filtroReporteActual);
+  if (conteo) conteo.textContent = items.length;
+
+  if (!items.length) {
+    contenedor.innerHTML = '<div class="reportes-vacio">Todavía no hay denuncias en esta categoría.</div>';
+    return;
+  }
+
+  contenedor.innerHTML = items.map(inc => {
+    const claseCat = CLASE_POR_CATEGORIA[inc.categoria] || '';
+    const esConfidencial = inc.categoria === 'Violencia Doméstica';
+    const emoji = EMOJI_POR_CATEGORIA[inc.categoria] || '📍';
+    const lugar = escapeHtml(lugarLegible(inc));
+    const horaExacta = escapeHtml(new Date(inc.timestamp).toLocaleString('es-HN'));
+    const relativo = tiempoRelativo(inc.timestamp);
+
+    const cuerpo = esConfidencial
+      ? '<span class="reporte-confidencial-tag">🔒 Detalles confidenciales</span>'
+      : (inc.descripcion ? `<div class="reporte-desc">${escapeHtml(inc.descripcion)}</div>` : '');
+
+    return `
+      <div class="reporte-card ${claseCat}">
+        <div class="reporte-icono">${emoji}</div>
+        <div class="reporte-cuerpo">
+          <div class="reporte-top">
+            <span class="reporte-categoria">${esConfidencial ? 'Reporte confidencial' : escapeHtml(inc.categoria)}</span>
+            <span class="reporte-tiempo" title="${horaExacta}">${relativo}</span>
+          </div>
+          <div class="reporte-lugar">${lugar}</div>
+          ${cuerpo}
+          <div class="reporte-acciones">
+            <button class="reporte-ver-mapa" onclick="verReporteEnMapa(${inc.lat}, ${inc.lng})">Ver en el mapa</button>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function verReporteEnMapa(lat, lng) {
+  cambiarTab('mapa');
+  map.setView([lat, lng], 17);
+}
+
+function setupFiltrosReportes() {
+  document.querySelectorAll('.pill-filtro').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.pill-filtro').forEach(b => b.classList.remove('activo'));
+      btn.classList.add('activo');
+      filtroReporteActual = btn.getAttribute('data-filtro');
+      renderizarReportes();
+    });
+  });
 }
 
 function cargarRecursos() {
@@ -223,8 +307,14 @@ function cambiarTab(nombre) {
   document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
   document.getElementById(`tab-${nombre}`).classList.add('active');
   if (nombre === 'alertas') { cargarAlertasActivas(); cargarIncidentesViolencia(); }
+  if (nombre === 'reportes') renderizarReportes();
   if (nombre === 'mapa') setTimeout(() => map.invalidateSize(), 100);
 }
+
+// Refresca los "hace X min" del feed de denuncias cada minuto, sin re-pedir datos al servidor.
+setInterval(() => {
+  if (document.getElementById('lista-reportes')) renderizarReportes();
+}, 60000);
 
 document.querySelectorAll('.filter-cat').forEach(cb => cb.addEventListener('change', actualizarMarcadores));
 
