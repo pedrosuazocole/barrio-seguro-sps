@@ -459,6 +459,168 @@ h1 {
   border-left-color: #6a1b9a;
 }
 
+/* ==================== MÓDULO DENUNCIAS (feed de reportes) ==================== */
+.reportes-header {
+  padding: 16px 16px 10px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.reportes-header h2 {
+  color: #1a237e;
+  font-size: 1.15rem;
+  margin-bottom: 12px;
+}
+
+.reportes-filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pill-filtro {
+  border: 1.5px solid #c5cae9;
+  background: white;
+  color: #3949ab;
+  border-radius: 999px;
+  padding: 7px 14px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.pill-filtro:hover { border-color: #3949ab; }
+
+.pill-filtro.activo {
+  background: #1a237e;
+  border-color: #1a237e;
+  color: white;
+}
+
+.lista-reportes {
+  padding: 6px 16px 24px;
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.reporte-card {
+  background: white;
+  border-radius: 14px;
+  padding: 14px 16px;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  box-shadow: 0 1px 5px rgba(0,0,0,0.08);
+  border-left: 5px solid #999;
+  animation: reporte-entra 0.25s ease;
+}
+
+@keyframes reporte-entra {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.reporte-card.cat-robo { border-left-color: #d32f2f; }
+.reporte-card.cat-vehiculo { border-left-color: #f57c00; }
+.reporte-card.cat-violencia { border-left-color: #6a1b9a; background: #faf5fc; }
+
+.reporte-icono {
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  color: white;
+}
+
+.reporte-card.cat-robo .reporte-icono { background: #d32f2f; }
+.reporte-card.cat-vehiculo .reporte-icono { background: #f57c00; }
+.reporte-card.cat-violencia .reporte-icono { background: #6a1b9a; }
+
+.reporte-cuerpo { flex: 1; min-width: 0; }
+
+.reporte-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.reporte-categoria {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #222;
+}
+
+.reporte-card.cat-robo .reporte-categoria { color: #d32f2f; }
+.reporte-card.cat-vehiculo .reporte-categoria { color: #e65100; }
+.reporte-card.cat-violencia .reporte-categoria { color: #6a1b9a; }
+
+.reporte-tiempo {
+  font-size: 0.75rem;
+  color: #888;
+  white-space: nowrap;
+}
+
+.reporte-lugar {
+  font-size: 0.85rem;
+  color: #444;
+  margin-top: 3px;
+}
+
+.reporte-lugar::before { content: "📍 "; }
+
+.reporte-desc {
+  font-size: 0.85rem;
+  color: #666;
+  margin-top: 6px;
+  line-height: 1.4;
+}
+
+.reporte-confidencial-tag {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #6a1b9a;
+  background: #ede0f5;
+  padding: 2px 9px;
+  border-radius: 999px;
+  letter-spacing: 0.3px;
+}
+
+.reporte-acciones {
+  margin-top: 8px;
+}
+
+.reporte-ver-mapa {
+  background: none;
+  border: 1.5px solid #c5cae9;
+  color: #3949ab;
+  border-radius: 8px;
+  padding: 4px 10px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.reporte-ver-mapa:hover { background: #e8eaf6; }
+
+.reportes-vacio {
+  text-align: center;
+  color: #888;
+  padding: 40px 20px;
+  font-size: 0.95rem;
+}
+
 /* ==================== AJUSTES PARA PANTALLAS MUY ANGOSTAS ==================== */
 /* Teléfonos de gama baja / pantallas ~320-380px de ancho */
 @media (max-width: 380px) {
@@ -470,6 +632,8 @@ h1 {
   .landing-card { width: 100%; max-width: 280px; }
   .tab { font-size: 0.8rem; padding: 10px 6px; }
   .auth-card { padding: 22px; }
+  .reporte-card { flex-direction: column; }
+  .reporte-icono { width: 36px; height: 36px; font-size: 1.1rem; }
 }
 
 /* Pantallas grandes: evita que formularios/mapas se estiren demasiado */
