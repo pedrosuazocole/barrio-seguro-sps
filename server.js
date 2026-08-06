@@ -7,6 +7,17 @@ const { initDB, getDB } = require('./database');
 const auth = require('./auth');
 const { direccionInversa } = require('./geocoding');
 
+// Honduras no usa horario de verano: UTC-6 todo el año.
+// Se guarda como texto "YYYY-MM-DD HH:MM:SS" SIN sufijo de zona horaria a propósito:
+// así, cuando el navegador hace `new Date(texto)` lo interpreta como su propia hora local
+// y `toLocaleString()` lo vuelve a mostrar igual — el número queda igual sin importar en
+// qué zona horaria esté configurado el dispositivo que lo mira. Antes se dejaba que SQLite
+// pusiera CURRENT_TIMESTAMP (que es UTC) y esa diferencia de 6 horas se colaba en pantalla.
+function nowHN() {
+  const d = new Date(Date.now() - 6 * 60 * 60 * 1000);
+  return d.toISOString().slice(0, 19).replace('T', ' ');
+}
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -154,8 +165,9 @@ app.post('/api/alertas/silenciosa', auth.requireAuth, async (req, res) => {
 
   const db = getDB();
   const mensaje = `Alerta silenciosa de ${req.usuario.nombre}`;
-  const stmt = db.prepare('INSERT INTO alertas_silenciosas (usuario_id, lat, lng, mensaje, direccion) VALUES (?, ?, ?, ?, ?)');
-  const info = stmt.run(req.usuario.id, lat, lng, mensaje, direccion);
+  const timestamp = nowHN();
+  const stmt = db.prepare('INSERT INTO alertas_silenciosas (usuario_id, lat, lng, mensaje, direccion, timestamp) VALUES (?, ?, ?, ?, ?, ?)');
+  const info = stmt.run(req.usuario.id, lat, lng, mensaje, direccion, timestamp);
   const alerta = {
     id: info.lastInsertRowid,
     usuario_id: req.usuario.id,
@@ -163,7 +175,7 @@ app.post('/api/alertas/silenciosa', auth.requireAuth, async (req, res) => {
     lng,
     mensaje,
     direccion,
-    timestamp: new Date().toISOString(),
+    timestamp,
     activa: 1
   };
   sendEventToAll('alerta_activada', alerta);
@@ -193,8 +205,9 @@ app.post('/api/incidentes', auth.requireAuth, async (req, res) => {
   const direccion = geo ? (geo.nombre || geo.direccion) : null;
 
   const db = getDB();
-  const stmt = db.prepare('INSERT INTO incidentes (categoria, lat, lng, descripcion, usuario_id, direccion) VALUES (?, ?, ?, ?, ?, ?)');
-  const info = stmt.run(categoria, lat, lng, descripcion || '', req.usuario.id, direccion);
+  const timestamp = nowHN();
+  const stmt = db.prepare('INSERT INTO incidentes (categoria, lat, lng, descripcion, usuario_id, direccion, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?)');
+  const info = stmt.run(categoria, lat, lng, descripcion || '', req.usuario.id, direccion, timestamp);
   const incidente = {
     id: info.lastInsertRowid,
     categoria,
@@ -202,7 +215,7 @@ app.post('/api/incidentes', auth.requireAuth, async (req, res) => {
     lng,
     descripcion: descripcion || '',
     direccion,
-    timestamp: new Date().toISOString()
+    timestamp
   };
   sendEventToAll('nuevo_incidente', incidente);
   res.json(incidente);

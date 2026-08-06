@@ -18,6 +18,13 @@ function columnaExiste(db, tabla, columna) {
   return cols.some(c => c.name === columna);
 }
 
+// Honduras no usa horario de verano: UTC-6 todo el año. Se guarda como texto
+// "YYYY-MM-DD HH:MM:SS" sin sufijo de zona horaria (ver la misma función en server.js).
+function nowHN() {
+  const d = new Date(Date.now() - 6 * 60 * 60 * 1000);
+  return d.toISOString().slice(0, 19).replace('T', ' ');
+}
+
 function initDB() {
   const db = getDB();
 
@@ -110,10 +117,10 @@ function initDB() {
     db.prepare('INSERT INTO contactos (usuario_id, nombre, telefono, relacion) VALUES (?, ?, ?, ?)').run(demoUserId, 'María López', '9999-0002', 'Hermana');
     db.prepare('INSERT INTO contactos (usuario_id, nombre, telefono, relacion) VALUES (?, ?, ?, ?)').run(demoUserId, 'Don Ramón', '9999-0003', 'Tendero');
 
-    db.prepare('INSERT INTO incidentes (categoria, lat, lng, descripcion, usuario_id, direccion) VALUES (?, ?, ?, ?, ?, ?)').run('Robo/Asalto', 15.501, -88.028, 'Robo en la Plaza Central', demoUserId, 'Plaza Central, San Pedro Sula');
-    db.prepare('INSERT INTO incidentes (categoria, lat, lng, descripcion, usuario_id, direccion) VALUES (?, ?, ?, ?, ?, ?)').run('Vehículo Sospechoso', 15.503, -88.030, 'Vehículo sin placas rondando', demoUserId, 'Barrio Los Andes, San Pedro Sula');
-    db.prepare('INSERT INTO incidentes (categoria, lat, lng, descripcion, usuario_id, direccion) VALUES (?, ?, ?, ?, ?, ?)').run('Violencia Doméstica', 15.502, -88.029, 'Reporte confidencial', demoUserId, null);
-    db.prepare('INSERT INTO incidentes (categoria, lat, lng, descripcion, usuario_id, direccion) VALUES (?, ?, ?, ?, ?, ?)').run('Robo/Asalto', 15.500, -88.027, 'Asalto en parqueo del mercado', demoUserId, 'Mercado Guamilito, San Pedro Sula');
+    db.prepare('INSERT INTO incidentes (categoria, lat, lng, descripcion, usuario_id, direccion, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?)').run('Robo/Asalto', 15.501, -88.028, 'Robo en la Plaza Central', demoUserId, 'Plaza Central, San Pedro Sula', nowHN());
+    db.prepare('INSERT INTO incidentes (categoria, lat, lng, descripcion, usuario_id, direccion, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?)').run('Vehículo Sospechoso', 15.503, -88.030, 'Vehículo sin placas rondando', demoUserId, 'Barrio Los Andes, San Pedro Sula', nowHN());
+    db.prepare('INSERT INTO incidentes (categoria, lat, lng, descripcion, usuario_id, direccion, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?)').run('Violencia Doméstica', 15.502, -88.029, 'Reporte confidencial', demoUserId, null, nowHN());
+    db.prepare('INSERT INTO incidentes (categoria, lat, lng, descripcion, usuario_id, direccion, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?)').run('Robo/Asalto', 15.500, -88.027, 'Asalto en parqueo del mercado', demoUserId, 'Mercado Guamilito, San Pedro Sula', nowHN());
 
     db.prepare('INSERT INTO recursos (nombre, tipo, lat, lng, direccion, telefono, horario) VALUES (?, ?, ?, ?, ?, ?, ?)').run(
       'Estación de Policía Col. Ideal', 'policia', 15.499, -88.025, 'Calle Principal, Col. Ideal', '911', '24 horas'
@@ -125,7 +132,7 @@ function initDB() {
       'Casa Refugio de la Mujer', 'refugio', 15.506, -88.031, 'Dirección confidencial', '2550-1111', '8:00 - 17:00'
     );
 
-    db.prepare('INSERT INTO alertas_silenciosas (usuario_id, lat, lng, mensaje, direccion) VALUES (?, ?, ?, ?, ?)').run(demoUserId, 15.501, -88.028, 'Alerta de prueba', 'Plaza Central, San Pedro Sula');
+    db.prepare('INSERT INTO alertas_silenciosas (usuario_id, lat, lng, mensaje, direccion, timestamp) VALUES (?, ?, ?, ?, ?, ?)').run(demoUserId, 15.501, -88.028, 'Alerta de prueba', 'Plaza Central, San Pedro Sula', nowHN());
   }
 }
 
