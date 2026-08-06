@@ -79,7 +79,11 @@ function actualizarMarcadores() {
   marcadoresLayer.clearLayers();
   const filtros = Array.from(document.querySelectorAll('.filter-cat:checked')).map(cb => cb.value);
 
-  allIncidentes.forEach(inc => {
+  // allIncidentes viene del servidor con el más reciente primero (ORDER BY timestamp DESC).
+  // Se dibuja en orden INVERSO (más viejo primero) para que el marcador más reciente quede
+  // pintado al final y por lo tanto visible ENCIMA si coincide con uno viejo en el mismo lugar
+  // — si no, un reporte nuevo puede quedar oculto debajo de uno anterior en la misma ubicación.
+  [...allIncidentes].reverse().forEach(inc => {
     if (!filtros.includes(inc.categoria)) return;
 
     const esConfidencial = inc.categoria === 'Violencia Doméstica';
