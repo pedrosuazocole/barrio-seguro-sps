@@ -1,4 +1,4 @@
-const CACHE_NAME = 'barrio-seguro-v3';
+const CACHE_NAME = 'barrio-seguro-v4';
 const ASSETS_TO_CACHE = [
   'css/style.css',
   'js/login.js',
