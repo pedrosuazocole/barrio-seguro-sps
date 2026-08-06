@@ -26,6 +26,7 @@
 
   <nav id="main-nav" style="display:flex;background:#1a237e;">
     <button class="tab active" data-tab="mapa">Mapa</button>
+    <button class="tab" data-tab="reportes">Denuncias</button>
     <button class="tab" data-tab="alertas">Alertas Activas</button>
     <button class="tab" data-tab="recursos">Recursos</button>
   </nav>
@@ -38,6 +39,19 @@
         <label><input type="checkbox" class="filter-cat" value="Violencia Doméstica" checked> 🆘 Violencia Doméstica</label>
       </div>
       <div id="map" style="height:60vh;margin:10px;width:calc(100% - 20px);border-radius:10px;border:2px solid #ccc;"></div>
+    </section>
+
+    <section id="tab-reportes" class="tab-content">
+      <div class="reportes-header">
+        <h2>📋 Denuncias recibidas <span id="conteo-reportes" class="badge-count">0</span></h2>
+        <div class="reportes-filtros">
+          <button class="pill-filtro activo" data-filtro="todas">Todas</button>
+          <button class="pill-filtro" data-filtro="Robo/Asalto">🚨 Robo/Asalto</button>
+          <button class="pill-filtro" data-filtro="Vehículo Sospechoso">🚗 Vehículo Sospechoso</button>
+          <button class="pill-filtro" data-filtro="Violencia Doméstica">🆘 Violencia Doméstica</button>
+        </div>
+      </div>
+      <div id="lista-reportes" class="lista-reportes"></div>
     </section>
 
     <section id="tab-alertas" class="tab-content">
